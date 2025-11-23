@@ -23,8 +23,7 @@ export { fetchJSON };
 export async function getNews(symbols?: string[]): Promise<MarketNewsArticle[]> {
     try {
         const range = getDateRange(5);
-        // NEXT_PUBLIC_FINNHUB_API_KEY is primary, FINNHUB_API_KEY is fallback
-        const token = NEXT_PUBLIC_FINNHUB_API_KEY ?? process.env.FINNHUB_API_KEY;
+        const token = process.env.FINNHUB_API_KEY ?? NEXT_PUBLIC_FINNHUB_API_KEY;
         if (!token) {
             throw new Error('FINNHUB API key is not configured');
         }
