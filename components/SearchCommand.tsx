@@ -7,8 +7,10 @@ import {Loader2,  TrendingUp} from "lucide-react";
 import Link from "next/link";
 import {searchStocks} from "@/lib/actions/finnhub.actions";
 import {useDebounce} from "@/hooks/useDebounce";
+import { useRouter } from "next/navigation";
 
 export default function SearchCommand({ renderAs = 'button', label = 'Add stock', initialStocks }: SearchCommandProps) {
+    const router = useRouter();
     const [open, setOpen] = useState(false)
     const [searchTerm, setSearchTerm] = useState("")
     const [loading, setLoading] = useState(false)
@@ -54,6 +56,13 @@ export default function SearchCommand({ renderAs = 'button', label = 'Add stock'
         setStocks(initialStocks);
     }
 
+    const goToTypedSymbol = () => {
+        const val = searchTerm.trim().toUpperCase();
+        if(!val) return;
+        handleSelectStock();
+        router.push(`/stocks/${encodeURIComponent(val)}`);
+    }
+
     return (
         <>
             {renderAs === 'text' ? (
@@ -67,7 +76,18 @@ export default function SearchCommand({ renderAs = 'button', label = 'Add stock'
             )}
             <CommandDialog open={open} onOpenChange={setOpen} className="search-dialog">
                 <div className="search-field">
-                    <CommandInput value={searchTerm} onValueChange={setSearchTerm} placeholder="Search stocks..." className="search-input" />
+                    <CommandInput
+                        value={searchTerm}
+                        onValueChange={setSearchTerm}
+                        placeholder="Search stocks..."
+                        className="search-input"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                goToTypedSymbol();
+                            }
+                        }}
+                    />
                     {loading && <Loader2 className="search-loader" />}
                 </div>
                 <CommandList className="search-list">
